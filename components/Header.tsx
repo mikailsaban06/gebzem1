@@ -9,46 +9,46 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ categories, activeCategory, onCategoryChange }) => {
   return (
-    <header className="w-full bg-white shadow-[0_2px_4px_rgba(0,0,0,0.02)] sticky top-0 z-50">
-      {/* Üst Kısım: Navigator ve Adres */}
-      <div className="w-full border-b border-gray-50">
-        <div className="max-w-md mx-auto px-[10px] py-4 flex items-center gap-3">
-          <button className="p-1 -ml-1 flex items-center justify-center" aria-label="Navigator">
+    <header className="w-full bg-white sticky top-0 z-50">
+      {/* Üst Header: %100 genişlikte border, içerik 10px paddingli */}
+      <div className="w-full border-b border-gray-100">
+        <div className="px-[10px] py-4 flex items-center gap-2.5">
+          <button className="flex items-center justify-center" aria-label="Navigator">
             <svg 
-              width="24" 
-              height="24" 
+              width="22" 
+              height="22" 
               viewBox="0 0 24 24" 
               fill="none" 
               stroke="currentColor" 
-              strokeWidth="2" 
+              strokeWidth="2.5" 
               strokeLinecap="round" 
               strokeLinejoin="round"
             >
-              <line x1="3" y1="12" x2="21" y2="12"></line>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <line x1="3" y1="18" x2="21" y2="18"></line>
+              <line x1="4" y1="12" x2="20" y2="12"></line>
+              <line x1="4" y1="6" x2="20" y2="6"></line>
+              <line x1="4" y1="18" x2="20" y2="18"></line>
             </svg>
           </button>
-          <span className="text-[15px] font-semibold tracking-tight truncate">
+          <span className="text-[16px] font-bold tracking-tight text-black truncate">
             Gaziler Mah. 1711 Sok
           </span>
         </div>
       </div>
 
-      {/* Alt Kısım: Kategoriler */}
-      <div className="w-full">
-        <div className="max-w-md mx-auto flex">
+      {/* Kategoriler: %100 genişlikte border-bottom */}
+      <div className="w-full border-b border-gray-50 overflow-x-auto no-scrollbar">
+        <div className="flex px-[10px]">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => onCategoryChange(category)}
-              className={`flex-1 py-3.5 text-sm font-medium transition-colors relative ${
+              className={`py-3 px-4 text-[14px] font-semibold whitespace-nowrap transition-all relative ${
                 activeCategory === category ? 'text-black' : 'text-gray-400'
               }`}
             >
               {category}
               {activeCategory === category && (
-                <div className="absolute bottom-0 left-0 w-full h-[2px] bg-black animate-in fade-in duration-300" />
+                <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-black rounded-t-full" />
               )}
             </button>
           ))}
