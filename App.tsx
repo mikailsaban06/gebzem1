@@ -2,28 +2,29 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
 import Layout from './components/Layout';
+import { Utensils, ChefHat, ShoppingBag, House, ScrollText, CircleUser } from 'lucide-react';
 
 const App: React.FC = () => {
-  const categories = ['Yemek', 'Restoran', 'Alışveriş'];
-  const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const categories = [
+    { id: 'yemek', label: 'Yemek', icon: <Utensils size={18} /> },
+    { id: 'restoran', label: 'Restoran', icon: <ChefHat size={18} /> },
+    { id: 'alisveris', label: 'Alışveriş', icon: <ShoppingBag size={18} /> }
+  ];
+  
+  const [activeCategoryId, setActiveCategoryId] = useState(categories[0].id);
 
   return (
     <div className="min-h-screen bg-white flex flex-col pb-24">
       <Header 
         categories={categories} 
-        activeCategory={activeCategory} 
-        onCategoryChange={setActiveCategory} 
+        activeCategoryId={activeCategoryId} 
+        onCategoryChange={setActiveCategoryId} 
       />
       
       <Layout>
-        {/* İçerik Alanı: Header ve Alt Menü arasındaki ana bölge */}
+        {/* İçerik Alanı: İstek üzerine boş bırakıldı */}
         <div className="py-8">
-          <div className="w-full aspect-[16/9] bg-[#F9F9F9] rounded-2xl border border-gray-100 flex flex-col items-center justify-center gap-3">
-             <div className="w-12 h-12 rounded-full bg-white border border-gray-100 shadow-sm flex items-center justify-center">
-                <div className="w-6 h-6 border-2 border-black rounded-sm"></div>
-             </div>
-             <p className="text-sm font-semibold text-gray-400">{activeCategory} kategorisi hazırlanıyor</p>
-          </div>
+          {/* İçerik buraya gelecek */}
         </div>
       </Layout>
       
@@ -32,19 +33,19 @@ const App: React.FC = () => {
         <div className="px-[10px] flex justify-between items-center">
           <div className="flex flex-col items-center gap-1 flex-1">
             <div className="w-6 h-6 flex items-center justify-center">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+               <House size={20} className="text-black" fill="currentColor" />
             </div>
-            <span className="text-[10px] font-bold text-black uppercase tracking-wider">Ana Sayfa</span>
+            <span className="text-[10px] font-bold text-black uppercase tracking-wider">Anasayfa</span>
           </div>
           <div className="flex flex-col items-center gap-1 flex-1 text-gray-400">
             <div className="w-6 h-6 flex items-center justify-center">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+               <ScrollText size={20} />
             </div>
             <span className="text-[10px] font-bold uppercase tracking-wider">Siparişlerim</span>
           </div>
           <div className="flex flex-col items-center gap-1 flex-1 text-gray-400">
             <div className="w-6 h-6 flex items-center justify-center">
-               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+               <CircleUser size={20} />
             </div>
             <span className="text-[10px] font-bold uppercase tracking-wider">Profil</span>
           </div>

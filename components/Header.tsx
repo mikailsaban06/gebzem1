@@ -1,37 +1,35 @@
 
 import React from 'react';
+import { Navigation } from 'lucide-react';
 
-interface HeaderProps {
-  categories: string[];
-  activeCategory: string;
-  onCategoryChange: (category: string) => void;
+interface Category {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
 }
 
-const Header: React.FC<HeaderProps> = ({ categories, activeCategory, onCategoryChange }) => {
+interface HeaderProps {
+  categories: Category[];
+  activeCategoryId: string;
+  onCategoryChange: (id: string) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ categories, activeCategoryId, onCategoryChange }) => {
   return (
     <header className="w-full bg-white sticky top-0 z-50">
       {/* Üst Header: %100 genişlikte border, içerik 10px paddingli */}
       <div className="w-full border-b border-gray-100">
-        <div className="px-[10px] py-4 flex items-center gap-2.5">
-          <button className="flex items-center justify-center" aria-label="Navigator">
-            <svg 
-              width="22" 
-              height="22" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="2.5" 
-              strokeLinecap="round" 
-              strokeLinejoin="round"
-            >
-              <line x1="4" y1="12" x2="20" y2="12"></line>
-              <line x1="4" y1="6" x2="20" y2="6"></line>
-              <line x1="4" y1="18" x2="20" y2="18"></line>
-            </svg>
-          </button>
-          <span className="text-[16px] font-bold tracking-tight text-black truncate">
-            Gaziler Mah. 1711 Sok
-          </span>
+        <div className="px-[10px] py-4 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <button className="flex items-center justify-center text-black" aria-label="Navigation">
+              <Navigation size={22} strokeWidth={2.5} fill="black" />
+            </button>
+            <div className="flex items-center">
+              <span className="text-[16px] font-bold tracking-tight text-black truncate">
+                Gaziler Mah. 1711 Sok
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -40,14 +38,17 @@ const Header: React.FC<HeaderProps> = ({ categories, activeCategory, onCategoryC
         <div className="flex px-[10px]">
           {categories.map((category) => (
             <button
-              key={category}
-              onClick={() => onCategoryChange(category)}
-              className={`py-3 px-4 text-[14px] font-semibold whitespace-nowrap transition-all relative ${
-                activeCategory === category ? 'text-black' : 'text-gray-400'
+              key={category.id}
+              onClick={() => onCategoryChange(category.id)}
+              className={`py-3 px-4 flex items-center gap-2 text-[14px] font-bold whitespace-nowrap transition-all relative ${
+                activeCategoryId === category.id ? 'text-black' : 'text-gray-400'
               }`}
             >
-              {category}
-              {activeCategory === category && (
+              <span className={activeCategoryId === category.id ? 'text-black' : 'text-gray-400'}>
+                {category.icon}
+              </span>
+              {category.label}
+              {activeCategoryId === category.id && (
                 <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-black rounded-t-full" />
               )}
             </button>
