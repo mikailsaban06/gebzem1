@@ -40,21 +40,37 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
     const userMessage = textOverride || input.trim();
     if (!userMessage || isLoading) return;
 
+    // API Key kontrolü (Sistem tarafından enjekte edilir)
+    if (!process.env.API_KEY) {
+      setMessages(prev => [...prev, { role: 'ai', text: "API anahtarı bulunamadı. Lütfen ayarlarınızı kontrol edin." }]);
+      return;
+    }
+
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+    const newMessages: Message[] = [...messages, { role: 'user', text: userMessage }];
+    setMessages(newMessages);
     setIsLoading(true);
 
     try {
+      // Her istekte yeni instance oluşturarak güncel anahtarı kullanıyoruz
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const response = await ai.models.generateContent({
+      
+      // Mesaj geçmişini SDK'nın beklediği formata dönüştür (ai -> model)
+      const history = messages.map(m => ({
+        role: m.role === 'ai' ? 'model' as const : 'user' as const,
+        parts: [{ text: m.text }]
+      }));
+
+      const chat = ai.chats.create({
         model: 'gemini-3-flash-preview',
-        contents: userMessage,
         config: {
           systemInstruction: "Sen Gebze bölgesinde hizmet veren bir süper uygulamanın akıllı asistanısın. Kullanıcılara yemek, alışveriş, restorant ve genel Gebze rehberliği konularında yardımcı oluyorsun. Cevapların kısa, öz ve yardımsever olmalı. Eğer kullanıcı bir hizmet veya yer arıyorsa, ilgili yerleri önermelisin.",
-        }
+        },
+        history: history
       });
 
-      const aiText = response.text || "Üzgünüm, şu an cevap veremiyorum.";
+      const result = await chat.sendMessage({ message: userMessage });
+      const aiText = result.text || "Üzgünüm, şu an cevap veremiyorum.";
       
       // Örnek işletme verileri (Simülasyon amaçlı)
       const mockBusinesses: Business[] = [
@@ -78,7 +94,6 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
         }
       ];
 
-      // Arama terimine göre işletme gösterip göstermeyeceğimize karar veriyoruz
       const shouldShowBusinesses = userMessage.toLowerCase().includes('fotoğraf') || 
                                   userMessage.toLowerCase().includes('yemek') || 
                                   userMessage.toLowerCase().includes('restoran');
@@ -90,7 +105,7 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
       }]);
     } catch (error) {
       console.error("Gemini Error:", error);
-      setMessages(prev => [...prev, { role: 'ai', text: "Bir hata oluştu. Lütfen tekrar dene." }]);
+      setMessages(prev => [...prev, { role: 'ai', text: "Bir hata oluştu. Lütfen tekrar deneyin." }]);
     } finally {
       setIsLoading(false);
     }
@@ -121,21 +136,18 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[100] bg-[#F9F9F9] flex flex-col font-['Plus_Jakarta_Sans']">
-      {/* Header */}
       <div className="pt-[env(safe-area-inset-top,20px)] px-4 py-4">
         <button onClick={onClose} className="text-black p-2 -ml-2">
           <ArrowLeft size={24} />
         </button>
       </div>
 
-      {/* Content Area */}
       <div 
         ref={scrollRef}
         className="flex-1 overflow-y-auto px-6 flex flex-col items-center no-scrollbar pb-32"
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center mt-20 w-full text-center">
-            {/* AI Orb */}
             <div className="relative w-40 h-40 mb-12">
               <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-orange-400 to-yellow-300 rounded-full blur-[2px] shadow-[0_0_60px_rgba(234,88,12,0.4)] animate-pulse"></div>
               <div className="absolute inset-[2px] bg-gradient-to-tr from-orange-500 to-yellow-200 rounded-full opacity-90"></div>
@@ -146,7 +158,6 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
               Merhaba Jane, bugün ne arıyorsun?
             </h1>
 
-            {/* Suggested Chips */}
             <div className="flex flex-wrap justify-center gap-3 w-full max-w-md">
               <button 
                 onClick={() => handleSend("Düğünüm için kadın fotoğrafçı")} 
@@ -202,7 +213,6 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
         )}
       </div>
 
-      {/* Bottom Search Bar Area */}
       <div className="px-4 pb-[env(safe-area-inset-bottom,20px)] mb-4">
         <div className="bg-white border border-gray-100 rounded-[32px] p-2 shadow-lg shadow-black/5">
           <div className="px-4 pt-2">
