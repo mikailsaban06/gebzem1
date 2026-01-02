@@ -73,16 +73,16 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
             </div>
 
             <h1 className="text-[28px] font-bold leading-tight tracking-tight text-black max-w-[280px] mb-8">
-              Hey Jane, What are you looking for today?
+              Merhaba Jane, bugün ne arıyorsun?
             </h1>
 
             {/* Suggested Chips */}
             <div className="flex flex-wrap justify-center gap-3 w-full max-w-md">
-              <button onClick={() => setInput("female photographer for my wedding in S,F")} className="px-4 py-3 bg-white border border-gray-100 rounded-2xl text-[13px] font-medium text-gray-800 shadow-sm active:bg-gray-50 transition-colors">
-                female photographer for my wedding in S,F
+              <button onClick={() => setInput("Düğünüm için kadın fotoğrafçı")} className="px-4 py-3 bg-white border border-gray-100 rounded-2xl text-[13px] font-medium text-gray-800 shadow-sm active:bg-gray-50 transition-colors">
+                Düğünüm için kadın fotoğrafçı
               </button>
-              <button onClick={() => setInput("cheap photographer under US$30")} className="px-4 py-3 bg-white border border-gray-100 rounded-2xl text-[13px] font-medium text-gray-800 shadow-sm active:bg-gray-50 transition-colors">
-                cheap photographer under US$30
+              <button onClick={() => setInput("30 TL altı uygun fotoğrafçı")} className="px-4 py-3 bg-white border border-gray-100 rounded-2xl text-[13px] font-medium text-gray-800 shadow-sm active:bg-gray-50 transition-colors">
+                30 TL altı uygun fotoğrafçı
               </button>
             </div>
           </div>
@@ -122,7 +122,7 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Start searching"
+              placeholder="Aramaya başla"
               className="w-full bg-transparent outline-none text-[16px] text-black placeholder-gray-400 font-medium py-1"
             />
           </div>
@@ -140,7 +140,7 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
                 <div className="w-4 h-4 flex items-center justify-center bg-orange-500 rounded-full">
                   <Sparkles size={10} className="text-white fill-white" />
                 </div>
-                <span className="text-[13px] font-bold">AI mode</span>
+                <span className="text-[13px] font-bold">AI modu</span>
               </button>
               
               <button 
@@ -152,7 +152,7 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
                 }`}
               >
                 <Search size={14} />
-                <span className="text-[13px] font-bold">Standard</span>
+                <span className="text-[13px] font-bold">Standart</span>
               </button>
             </div>
 
