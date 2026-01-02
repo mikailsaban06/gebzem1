@@ -13,9 +13,8 @@ import {
   Flame,
   Fish,
   Beef,
-  Cookie,
-  Coffee,
   IceCream,
+  Coffee,
   Sandwich,
   Grape
 } from 'lucide-react';
@@ -34,33 +33,44 @@ const App: React.FC = () => {
     { name: 'Meyve', icon: <Grape size={24} strokeWidth={1.5} /> }
   ];
 
+  const campaigns = [
+    "Özel Kampanya 1",
+    "Özel Kampanya 2",
+    "Özel Kampanya 3",
+    "Özel Kampanya 4",
+    "Özel Kampanya 5",
+    "Özel Kampanya 6"
+  ];
+
   return (
-    <div className="min-h-screen bg-white flex flex-col pb-32">
+    <div className="min-h-screen bg-white flex flex-col pb-32 overflow-x-hidden">
       <Header />
       
       <Layout>
         <div className="flex flex-col gap-6 py-4">
-          {/* Slider Bölümü - %100 Genişlik */}
-          <div className="w-full overflow-x-auto no-scrollbar flex snap-x snap-mandatory">
-            <div className="min-w-full h-44 bg-gray-50 border-y border-gray-100 snap-center flex items-center justify-center p-6 text-center">
-              <span className="text-[16px] font-bold text-black">Özel Kampanya 1</span>
-            </div>
-            <div className="min-w-full h-44 bg-gray-50 border-y border-gray-100 snap-center flex items-center justify-center p-6 text-center">
-              <span className="text-[16px] font-bold text-black">Özel Kampanya 2</span>
-            </div>
-            <div className="min-w-full h-44 bg-gray-50 border-y border-gray-100 snap-center flex items-center justify-center p-6 text-center">
-              <span className="text-[16px] font-bold text-black">Özel Kampanya 3</span>
+          {/* Slider Bölümü - Container İçine Hapsedildi */}
+          <div className="w-full overflow-hidden">
+            <div className="w-full overflow-x-auto no-scrollbar flex snap-x snap-mandatory touch-pan-x">
+              {campaigns.map((camp, idx) => (
+                <div 
+                  key={idx} 
+                  className="w-full flex-shrink-0 h-44 bg-gray-50 border-y border-gray-100 snap-center flex items-center justify-center p-6 text-center"
+                >
+                  <span className="text-[16px] font-bold text-black uppercase tracking-tight">
+                    {camp}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Öne Çıkan Kategoriler Bölümü - %100 Genişlik */}
+          {/* Öne Çıkan Kategoriler Bölümü */}
           <div className="flex flex-col gap-3">
-            {/* Başlık için 10px padding */}
             <h2 className="text-[16px] font-bold text-black px-[10px]">Öne çıkan kategoriler</h2>
             <div className="w-full overflow-x-auto no-scrollbar flex gap-4 pb-2 px-[10px]">
               {featuredCategories.map((cat, idx) => (
                 <div key={idx} className="flex flex-col items-center gap-2 min-w-[60px]">
-                  <div className="w-[60px] h-[60px] bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-center text-black">
+                  <div className="w-[60px] h-[60px] bg-gray-50 border border-gray-100 rounded-xl shadow-sm flex items-center justify-center text-black">
                     {cat.icon}
                   </div>
                   <span className="text-[11px] font-semibold text-gray-700">{cat.name}</span>
