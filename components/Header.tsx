@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Navigation } from 'lucide-react';
+import { Navigation, Bell } from 'lucide-react';
 
 interface Category {
   id: string;
@@ -29,6 +29,11 @@ const Header: React.FC<HeaderProps> = ({ categories, activeCategoryId, onCategor
                 Gaziler Mah. 1711 Sok
               </span>
             </div>
+          </div>
+          
+          {/* Bildirim İkonu: 42x42, hafif gri daire */}
+          <div className="w-[42px] h-[42px] bg-gray-50 rounded-full flex items-center justify-center text-black">
+            <Bell size={20} strokeWidth={2.5} />
           </div>
         </div>
       </div>
