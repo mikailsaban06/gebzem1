@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, ArrowUp, Sparkles, Search, Star, MapPin } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
@@ -68,8 +69,6 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
     setIsLoading(true);
 
     try {
-      // Vite ve Vercel için güvenli API Key erişimi
-      // process.env tarayıcıda hata verebileceği için window ve meta.env kontrolleri eklendi
       let apiKey = '';
       try {
         apiKey = process.env.API_KEY || (import.meta as any).env?.VITE_API_KEY || '';
@@ -78,11 +77,9 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
       }
 
       if (!apiKey) {
-        // Eğer anahtar yoksa AI Studio penceresini açmayı dene
         const aistudio = (window as any).aistudio;
         if (aistudio) {
           await aistudio.openSelectKey();
-          // Seçimden sonra tekrar dene (process.env otomatik güncellenir)
           apiKey = process.env.API_KEY || '';
         }
       }
@@ -136,13 +133,10 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
 
     } catch (error: any) {
       console.error("Gemini Connection Error:", error);
-      
-      // Detaylı hata mesajı
       let errorMsg = "Bağlantı hatası oluştu.";
       if (!process.env.API_KEY && !(import.meta as any).env?.VITE_API_KEY) {
         errorMsg = "API Anahtarı bulunamadı. Lütfen Vercel'den 'VITE_API_KEY' değişkenini ekleyip Redeploy yapın.";
       }
-
       setMessages(prev => [...prev, { 
         role: 'model', 
         text: errorMsg 
@@ -166,26 +160,27 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center mt-20 w-full text-center">
-            <div className="relative w-40 h-40 mb-12">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-orange-400 to-yellow-300 rounded-full blur-[2px] shadow-[0_0_60px_rgba(234,88,12,0.4)] animate-pulse"></div>
-              <div className="absolute inset-[2px] bg-gradient-to-tr from-orange-500 to-yellow-200 rounded-full opacity-90"></div>
-              <div className="absolute top-1/4 left-1/4 w-8 h-8 bg-white/30 rounded-full blur-md"></div>
+            {/* Turuncu daire %50 küçültüldü (w-40/h-40 -> w-20/h-20) */}
+            <div className="relative w-20 h-20 mb-8">
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-orange-400 to-yellow-300 rounded-full blur-[1px] shadow-[0_0_30px_rgba(234,88,12,0.3)] animate-pulse"></div>
+              <div className="absolute inset-[1px] bg-gradient-to-tr from-orange-500 to-yellow-200 rounded-full opacity-90"></div>
+              <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-white/30 rounded-full blur-sm"></div>
             </div>
 
-            <h1 className="text-[28px] font-bold leading-tight tracking-tight text-black max-w-[280px] mb-8">
+            <h1 className="text-[24px] font-bold leading-tight tracking-tight text-black max-w-[280px] mb-8">
               Merhaba, bugün ne arıyorsun?
             </h1>
 
-            <div className="flex flex-wrap justify-center gap-3 w-full max-w-md">
+            <div className="flex flex-wrap justify-center gap-2 w-full max-w-md">
               <button 
                 onClick={() => handleSend("Düğünüm için kadın fotoğrafçı")} 
-                className="px-4 py-3 bg-white border border-gray-100 rounded-2xl text-[13px] font-medium text-gray-800 shadow-sm active:bg-gray-50 transition-colors"
+                className="px-3 py-2 bg-white border border-gray-100 rounded-xl text-[12px] font-medium text-gray-800 shadow-sm active:bg-gray-50 transition-colors"
               >
                 Düğünüm için kadın fotoğrafçı
               </button>
               <button 
                 onClick={() => handleSend("Uygun fiyatlı yemek yerleri")} 
-                className="px-4 py-3 bg-white border border-gray-100 rounded-2xl text-[13px] font-medium text-gray-800 shadow-sm active:bg-gray-50 transition-colors"
+                className="px-3 py-2 bg-white border border-gray-100 rounded-xl text-[12px] font-medium text-gray-800 shadow-sm active:bg-gray-50 transition-colors"
               >
                 Uygun fiyatlı yemek yerleri
               </button>
