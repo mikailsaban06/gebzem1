@@ -160,7 +160,6 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
       >
         {messages.length === 0 ? (
           <div className="flex flex-col items-center mt-20 w-full text-center">
-            {/* Turuncu daire %50 küçültüldü (w-40/h-40 -> w-20/h-20) */}
             <div className="relative w-20 h-20 mb-8">
               <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-orange-400 to-yellow-300 rounded-full blur-[1px] shadow-[0_0_30px_rgba(234,88,12,0.3)] animate-pulse"></div>
               <div className="absolute inset-[1px] bg-gradient-to-tr from-orange-500 to-yellow-200 rounded-full opacity-90"></div>
@@ -240,12 +239,13 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
           
           <div className="flex items-center justify-between mt-2">
             <div className="flex gap-1">
+              {/* Sarsıntı düzeltmesi için border yapısı sabitlendi */}
               <button 
                 onClick={() => setSearchMode('ai')}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition-all ${
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition-all border ${
                   searchMode === 'ai' 
-                    ? 'bg-white border border-orange-100 text-black shadow-sm' 
-                    : 'text-gray-400'
+                    ? 'bg-white border-orange-100 text-black shadow-sm' 
+                    : 'bg-transparent border-transparent text-gray-400'
                 }`}
               >
                 <div className="w-4 h-4 flex items-center justify-center bg-orange-500 rounded-full">
@@ -256,10 +256,10 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
               
               <button 
                 onClick={() => setSearchMode('standard')}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition-all ${
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition-all border ${
                   searchMode === 'standard' 
-                    ? 'bg-white border border-gray-100 text-black shadow-sm' 
-                    : 'text-gray-400'
+                    ? 'bg-white border-gray-100 text-black shadow-sm' 
+                    : 'bg-transparent border-transparent text-gray-400'
                 }`}
               >
                 <Search size={14} />
