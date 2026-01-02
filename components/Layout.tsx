@@ -8,7 +8,8 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <main className="w-full flex-1">
-      <div className="max-w-md mx-auto px-[10px]">
+      {/* max-w-md ve px-[10px] kaldırıldı, içerik tam genişlikte */}
+      <div className="w-full">
         {children}
       </div>
     </main>
