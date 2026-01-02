@@ -14,7 +14,7 @@ interface Business {
 }
 
 interface Message {
-  role: 'user' | 'ai';
+  role: 'user' | 'model';
   text: string;
   businesses?: Business[];
 }
@@ -40,37 +40,29 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
     const userMessage = textOverride || input.trim();
     if (!userMessage || isLoading) return;
 
+    const newMessage: Message = { role: 'user', text: userMessage };
+    setMessages(prev => [...prev, newMessage]);
     setInput('');
-    const newMessages: Message[] = [...messages, { role: 'user', text: userMessage }];
-    setMessages(newMessages);
     setIsLoading(true);
 
     try {
-      // AI Studio anahtar kontrolü (Vercel'deki anahtarın istemci tarafında görünmemesi durumunda yedek mekanizma)
-      const aiStudio = (window as any).aistudio;
-      if (aiStudio) {
-        const hasKey = await aiStudio.hasSelectedApiKey();
+      // API Key kontrolü ve AI Studio köprüsü
+      const aistudio = (window as any).aistudio;
+      if (aistudio) {
+        const hasKey = await aistudio.hasSelectedApiKey();
         if (!hasKey && !process.env.API_KEY) {
-          await aiStudio.openSelectKey();
+          await aistudio.openSelectKey();
         }
       }
 
-      // SDK standartlarına göre instance oluştur (Her aramada yeni instance önerilir)
+      // Yeni instance oluştur (Daima en güncel anahtarı kullanması için)
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
       
-      // Geçmişi SDK formatına dönüştür
-      const contents = messages.map(m => ({
-        role: m.role === 'ai' ? 'model' : 'user',
+      const contents = [...messages, newMessage].map(m => ({
+        role: m.role,
         parts: [{ text: m.text }]
       }));
 
-      // Mevcut mesajı ekle
-      contents.push({
-        role: 'user',
-        parts: [{ text: userMessage }]
-      });
-
-      // Gemini 3 Flash modelini kullan (Hızlı ve etkili)
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: contents,
@@ -79,9 +71,8 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
         },
       });
 
-      const aiText = response.text || "Şu an yanıt üretemiyorum.";
+      const aiText = response.text || "Üzgünüm, şu an yanıt veremiyorum.";
       
-      // İşletme önerileri simülasyonu
       const mockBusinesses: Business[] = [
         {
           id: '1',
@@ -107,22 +98,23 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
       const shouldShowBusinesses = keywords.some(term => userMessage.toLowerCase().includes(term));
 
       setMessages(prev => [...prev, { 
-        role: 'ai', 
+        role: 'model', 
         text: aiText,
         businesses: shouldShowBusinesses ? mockBusinesses : undefined
       }]);
 
     } catch (error: any) {
-      console.error("Gemini Error:", error);
+      console.error("Gemini Connection Error:", error);
       
-      // Eğer anahtar hatası varsa tekrar seçim penceresini açmayı dene
-      if (error?.message?.includes("API key") || error?.message?.includes("entity was not found")) {
-        if ((window as any).aistudio) await (window as any).aistudio.openSelectKey();
+      // Anahtar geçersizse veya bulunamadıysa pencereyi aç
+      if (error?.message?.includes("API key") || error?.message?.includes("entity was not found") || error?.message?.includes("403") || error?.message?.includes("401")) {
+        const aistudio = (window as any).aistudio;
+        if (aistudio) await aistudio.openSelectKey();
       }
 
       setMessages(prev => [...prev, { 
-        role: 'ai', 
-        text: "Bağlantı kurulamadı. Lütfen API anahtarınızın geçerli olduğundan ve Vercel üzerinde doğru tanımlandığından emin olun." 
+        role: 'model', 
+        text: "Bağlantı hatası: Lütfen Vercel'den projenizi 'Redeploy' yaptığınızdan emin olun veya açılan pencereden anahtarınızı tekrar seçin." 
       }]);
     } finally {
       setIsLoading(false);
