@@ -23,6 +23,30 @@ interface ChatViewProps {
   onClose: () => void;
 }
 
+// Fixed: Moved BusinessCard outside and added React.FC type to handle 'key' prop correctly (Line 124 fix)
+const BusinessCard: React.FC<{ business: Business }> = ({ business }) => (
+  <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm min-w-[240px] w-[240px]">
+    <div className="relative h-32 w-full">
+      <img src={business.image} alt={business.name} className="w-full h-full object-cover" />
+      <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1">
+        <Star size={12} className="text-orange-500 fill-orange-500" />
+        <span className="text-[11px] font-bold text-black">{business.rating}</span>
+      </div>
+    </div>
+    <div className="p-3">
+      <h4 className="text-[14px] font-bold text-black truncate">{business.name}</h4>
+      <p className="text-[11px] text-gray-500 font-medium mb-2">{business.category}</p>
+      <div className="flex items-center justify-between mt-auto">
+        <div className="flex items-center gap-1 text-gray-400">
+          <MapPin size={12} />
+          <span className="text-[11px] font-medium">{business.distance}</span>
+        </div>
+        <span className="text-[11px] text-gray-400">({business.reviews} yorum)</span>
+      </div>
+    </div>
+  </div>
+);
+
 const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -46,17 +70,8 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
     setIsLoading(true);
 
     try {
-      // API Key kontrolü ve AI Studio köprüsü
-      const aistudio = (window as any).aistudio;
-      if (aistudio) {
-        const hasKey = await aistudio.hasSelectedApiKey();
-        if (!hasKey && !process.env.API_KEY) {
-          await aistudio.openSelectKey();
-        }
-      }
-
-      // Yeni instance oluştur (Daima en güncel anahtarı kullanması için)
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+      // Fixed: Initialize GoogleGenAI exclusively with process.env.API_KEY as per guidelines
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
       
       const contents = [...messages, newMessage].map(m => ({
         role: m.role,
@@ -106,43 +121,14 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
     } catch (error: any) {
       console.error("Gemini Connection Error:", error);
       
-      // Anahtar geçersizse veya bulunamadıysa pencereyi aç
-      if (error?.message?.includes("API key") || error?.message?.includes("entity was not found") || error?.message?.includes("403") || error?.message?.includes("401")) {
-        const aistudio = (window as any).aistudio;
-        if (aistudio) await aistudio.openSelectKey();
-      }
-
       setMessages(prev => [...prev, { 
         role: 'model', 
-        text: "Bağlantı hatası: Lütfen Vercel'den projenizi 'Redeploy' yaptığınızdan emin olun veya açılan pencereden anahtarınızı tekrar seçin." 
+        text: "Üzgünüm, bir bağlantı hatası oluştu. Lütfen daha sonra tekrar deneyiniz." 
       }]);
     } finally {
       setIsLoading(false);
     }
   };
-
-  const BusinessCard = ({ business }: { business: Business }) => (
-    <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm min-w-[240px] w-[240px]">
-      <div className="relative h-32 w-full">
-        <img src={business.image} alt={business.name} className="w-full h-full object-cover" />
-        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg flex items-center gap-1">
-          <Star size={12} className="text-orange-500 fill-orange-500" />
-          <span className="text-[11px] font-bold text-black">{business.rating}</span>
-        </div>
-      </div>
-      <div className="p-3">
-        <h4 className="text-[14px] font-bold text-black truncate">{business.name}</h4>
-        <p className="text-[11px] text-gray-500 font-medium mb-2">{business.category}</p>
-        <div className="flex items-center justify-between mt-auto">
-          <div className="flex items-center gap-1 text-gray-400">
-            <MapPin size={12} />
-            <span className="text-[11px] font-medium">{business.distance}</span>
-          </div>
-          <span className="text-[11px] text-gray-400">({business.reviews} yorum)</span>
-        </div>
-      </div>
-    </div>
-  );
 
   return (
     <div className="fixed inset-0 z-[100] bg-[#F9F9F9] flex flex-col font-['Plus_Jakarta_Sans']">
