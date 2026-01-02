@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Header from './components/Header';
 import Layout from './components/Layout';
 import { 
@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 
 const App: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<'home' | 'search' | 'categories' | 'offers' | 'profile'>('home');
+
   const featuredCategories = [
     { name: 'Pizza', icon: <Pizza size={24} strokeWidth={1.5} /> },
     { name: 'Burger', icon: <UtensilsCrossed size={24} strokeWidth={1.5} /> },
@@ -34,12 +36,12 @@ const App: React.FC = () => {
   ];
 
   const campaigns = [
-    "Özel Kampanya 1",
-    "Özel Kampanya 2",
-    "Özel Kampanya 3",
-    "Özel Kampanya 4",
-    "Özel Kampanya 5",
-    "Özel Kampanya 6"
+    { title: "Bugün Ne Yesek?", subtitle: "Sana özel %30'a varan indirimleri keşfet" },
+    { title: "Sıcak Pizza Keyfi", subtitle: "2. orta boy pizza şimdi sadece 99 TL" },
+    { title: "Burger Menü Günleri", subtitle: "Seçili menülerde bedava içecek fırsatı" },
+    { title: "Sağlıklı Seçenekler", subtitle: "Taze salata ve bowl çeşitlerinde kampanya" },
+    { title: "Gece Acıkanlara", subtitle: "Saat 22:00'den sonra bedava teslimat" },
+    { title: "Tatlı Bir Son", subtitle: "Yemek yanına tüm tatlılar %50 indirimli" }
   ];
 
   return (
@@ -48,19 +50,24 @@ const App: React.FC = () => {
       
       <Layout>
         <div className="flex flex-col gap-6 py-4">
-          {/* Slider Bölümü - Container İçine Hapsedildi */}
-          <div className="w-full overflow-hidden">
-            <div className="w-full overflow-x-auto no-scrollbar flex snap-x snap-mandatory touch-pan-x">
-              {campaigns.map((camp, idx) => (
-                <div 
-                  key={idx} 
-                  className="w-full flex-shrink-0 h-44 bg-gray-50 border-y border-gray-100 snap-center flex items-center justify-center p-6 text-center"
-                >
-                  <span className="text-[16px] font-bold text-black uppercase tracking-tight">
-                    {camp}
-                  </span>
-                </div>
-              ))}
+          {/* Slider Bölümü */}
+          <div className="px-[10px]">
+            <div className="w-full overflow-hidden rounded-2xl bg-gray-50">
+              <div className="w-full overflow-x-auto no-scrollbar flex snap-x snap-mandatory touch-pan-x">
+                {campaigns.map((camp, idx) => (
+                  <div 
+                    key={idx} 
+                    className="w-full flex-shrink-0 h-44 snap-center flex flex-col items-start justify-center p-6 text-left"
+                  >
+                    <h3 className="text-[20px] font-bold text-black tracking-tight leading-tight mb-1">
+                      {camp.title}
+                    </h3>
+                    <p className="text-[13px] font-medium text-gray-500">
+                      {camp.subtitle}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -70,7 +77,7 @@ const App: React.FC = () => {
             <div className="w-full overflow-x-auto no-scrollbar flex gap-4 pb-2 px-[10px]">
               {featuredCategories.map((cat, idx) => (
                 <div key={idx} className="flex flex-col items-center gap-2 min-w-[60px]">
-                  <div className="w-[60px] h-[60px] bg-gray-50 border border-gray-100 rounded-xl shadow-sm flex items-center justify-center text-black">
+                  <div className="w-[60px] h-[60px] bg-gray-50 rounded-xl flex items-center justify-center text-black">
                     {cat.icon}
                   </div>
                   <span className="text-[11px] font-semibold text-gray-700">{cat.name}</span>
@@ -82,42 +89,57 @@ const App: React.FC = () => {
       </Layout>
       
       {/* Alt Menü */}
-      <footer className="w-full border-t border-gray-100 bg-white fixed bottom-0 left-0 pt-4 pb-[26px] shadow-[0_-4px_12px_rgba(0,0,0,0.03)] z-50 rounded-t-[20px]">
+      <footer className="w-full border-t border-gray-100 bg-white fixed bottom-0 left-0 pt-4 pb-[26px] z-50 rounded-t-[20px]">
         <div className="px-[10px] flex justify-between items-center">
-          <div className="flex flex-col items-center gap-1 flex-1">
+          <button 
+            onClick={() => setActiveTab('home')}
+            className={`flex flex-col items-center gap-1 flex-1 transition-colors ${activeTab === 'home' ? 'text-black' : 'text-gray-400'}`}
+          >
             <div className="w-6 h-6 flex items-center justify-center">
-               <House size={20} strokeWidth={2.5} className="text-black" />
+               <House size={20} strokeWidth={activeTab === 'home' ? 2.5 : 2} />
             </div>
-            <span className="text-[10px] font-bold text-black tracking-wider">Anasayfa</span>
-          </div>
+            <span className="text-[10px] font-bold tracking-wider">Anasayfa</span>
+          </button>
           
-          <div className="flex flex-col items-center gap-1 flex-1 text-gray-400">
+          <button 
+            onClick={() => setActiveTab('search')}
+            className={`flex flex-col items-center gap-1 flex-1 transition-colors ${activeTab === 'search' ? 'text-black' : 'text-gray-400'}`}
+          >
             <div className="w-6 h-6 flex items-center justify-center">
-               <Search size={20} strokeWidth={2} />
+               <Search size={20} strokeWidth={activeTab === 'search' ? 2.5 : 2} />
             </div>
             <span className="text-[10px] font-bold tracking-wider">Arama</span>
-          </div>
+          </button>
           
-          <div className="flex flex-col items-center gap-1 flex-1 text-gray-400">
+          <button 
+            onClick={() => setActiveTab('categories')}
+            className={`flex flex-col items-center gap-1 flex-1 transition-colors ${activeTab === 'categories' ? 'text-black' : 'text-gray-400'}`}
+          >
             <div className="w-6 h-6 flex items-center justify-center">
-               <LayoutGrid size={20} strokeWidth={2} />
+               <LayoutGrid size={20} strokeWidth={activeTab === 'categories' ? 2.5 : 2} />
             </div>
             <span className="text-[10px] font-bold tracking-wider">Kategoriler</span>
-          </div>
+          </button>
 
-          <div className="flex flex-col items-center gap-1 flex-1 text-gray-400">
+          <button 
+            onClick={() => setActiveTab('offers')}
+            className={`flex flex-col items-center gap-1 flex-1 transition-colors ${activeTab === 'offers' ? 'text-black' : 'text-gray-400'}`}
+          >
             <div className="w-6 h-6 flex items-center justify-center">
-               <TicketPercent size={20} strokeWidth={2} />
+               <TicketPercent size={20} strokeWidth={activeTab === 'offers' ? 2.5 : 2} />
             </div>
             <span className="text-[10px] font-bold tracking-wider">Kampanya</span>
-          </div>
+          </button>
 
-          <div className="flex flex-col items-center gap-1 flex-1 text-gray-400">
+          <button 
+            onClick={() => setActiveTab('profile')}
+            className={`flex flex-col items-center gap-1 flex-1 transition-colors ${activeTab === 'profile' ? 'text-black' : 'text-gray-400'}`}
+          >
             <div className="w-6 h-6 flex items-center justify-center">
-               <CircleUser size={20} strokeWidth={2} />
+               <CircleUser size={20} strokeWidth={activeTab === 'profile' ? 2.5 : 2} />
             </div>
             <span className="text-[10px] font-bold tracking-wider">Profil</span>
-          </div>
+          </button>
         </div>
       </footer>
     </div>

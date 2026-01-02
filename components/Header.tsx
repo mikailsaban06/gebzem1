@@ -25,10 +25,10 @@ const Header: React.FC = () => {
         <div className="px-[10px] py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <button className="flex items-center justify-center text-black" aria-label="Navigation">
-              <Navigation size={18} strokeWidth={1.5} />
+              <Navigation size={18} strokeWidth={2.0} />
             </button>
             <div className="flex items-center">
-              <span className="text-[14px] font-bold tracking-tight text-black truncate">
+              <span className="text-[15px] font-bold tracking-tight text-black truncate">
                 Gaziler Mah. 1711 Sok
               </span>
             </div>
@@ -53,7 +53,6 @@ const Header: React.FC = () => {
           />
         </div>
       </div>
-      <div className="w-full border-b border-gray-100"></div>
     </header>
   );
 };
