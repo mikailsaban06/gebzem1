@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, ArrowUp, Sparkles, Search, Star, MapPin } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
@@ -39,41 +40,46 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
     const userMessage = textOverride || input.trim();
     if (!userMessage || isLoading) return;
 
+    // Mesajı ekrana yansıt
+    const userMsgObj: Message = { role: 'user', text: userMessage };
+    setMessages(prev => [...prev, userMsgObj]);
     setInput('');
-    const newMessages: Message[] = [...messages, { role: 'user', text: userMessage }];
-    setMessages(newMessages);
     setIsLoading(true);
 
     try {
-      // AI Studio API Key seçimi kontrolü (Sistem gereksinimi)
-      if (typeof window !== 'undefined' && (window as any).aistudio) {
-        const hasKey = await (window as any).aistudio.hasSelectedApiKey();
-        if (!hasKey) {
-          await (window as any).aistudio.openSelectKey();
-        }
+      // SDK Kurallarına göre initialization - Vercel API_KEY kullanılır
+      const apiKey = process.env.API_KEY;
+      
+      if (!apiKey) {
+        throw new Error("API_KEY environment variable is missing.");
       }
 
-      // Her aramada yeni bir instance oluşturulur (Güncel API Key kullanımı için)
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      const ai = new GoogleGenAI({ apiKey });
       
-      // Geçmişi SDK formatına dönüştür (ai -> model)
-      const history = messages.map(m => ({
-        role: m.role === 'ai' ? 'model' as const : 'user' as const,
+      // Geçmişi SDK'nın beklediği formata çevir
+      const contents = messages.map(m => ({
+        role: m.role === 'ai' ? 'model' : 'user',
         parts: [{ text: m.text }]
       }));
 
-      // generateContent ile doğrudan çağrı (Chat history ile birlikte)
+      // Mevcut mesajı ekle
+      contents.push({
+        role: 'user',
+        parts: [{ text: userMessage }]
+      });
+
+      // generateContent ile doğrudan API çağrısı
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
-        contents: [...history, { role: 'user', parts: [{ text: userMessage }] }],
+        contents: contents,
         config: {
           systemInstruction: "Sen Gebze bölgesinde hizmet veren bir süper uygulamanın akıllı asistanısın. Kullanıcılara yemek, alışveriş, restorant ve genel Gebze rehberliği konularında yardımcı oluyorsun. Cevapların kısa, öz ve yardımsever olmalı. Eğer kullanıcı bir hizmet veya yer arıyorsa, ilgili yerleri önermelisin.",
         },
       });
 
-      const aiText = response.text || "Üzgünüm, şu an cevap veremiyorum.";
+      const aiText = response.text || "Şu an yanıt üretemiyorum.";
       
-      // Örnek işletme verileri simülasyonu
+      // Örnek işletme verileri (Basit bir tetikleyici ile)
       const mockBusinesses: Business[] = [
         {
           id: '1',
@@ -95,25 +101,20 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
         }
       ];
 
-      const searchTerms = ['fotoğraf', 'yemek', 'restoran', 'kebap', 'pizza', 'döner', 'tatlı', 'kahve'];
-      const shouldShowBusinesses = searchTerms.some(term => userMessage.toLowerCase().includes(term));
+      const keywords = ['fotoğraf', 'yemek', 'restoran', 'kebap', 'pizza', 'döner', 'tatlı', 'kahve', 'nerede'];
+      const shouldShowBusinesses = keywords.some(term => userMessage.toLowerCase().includes(term));
 
       setMessages(prev => [...prev, { 
         role: 'ai', 
         text: aiText,
         businesses: shouldShowBusinesses ? mockBusinesses : undefined
       }]);
-    } catch (error: any) {
-      console.error("Gemini API Error:", error);
-      
-      // API Key geçersizliği durumunda tekrar seçim penceresini tetikle
-      if (error?.message?.includes("Requested entity was not found") && (window as any).aistudio) {
-        await (window as any).aistudio.openSelectKey();
-      }
 
+    } catch (error: any) {
+      console.error("Gemini Connection Error:", error);
       setMessages(prev => [...prev, { 
         role: 'ai', 
-        text: "Şu an bir bağlantı sorunu yaşıyorum. Lütfen API anahtarınızı veya internet bağlantınızı kontrol edip tekrar deneyin." 
+        text: "Bağlantı sağlanamadı. Lütfen Vercel ayarlarından API_KEY değişkenini ve projenin yeniden dağıtıldığını (re-deploy) kontrol edin." 
       }]);
     } finally {
       setIsLoading(false);
