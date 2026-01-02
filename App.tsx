@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Header from './components/Header';
 import Layout from './components/Layout';
+import ChatView from './components/ChatView';
 import { 
   House, 
   Search, 
@@ -21,6 +22,7 @@ import {
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'home' | 'search' | 'categories' | 'offers' | 'profile'>('home');
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const featuredCategories = [
     { name: 'Pizza', icon: <Pizza size={24} strokeWidth={1.5} /> },
@@ -43,6 +45,10 @@ const App: React.FC = () => {
     { title: "Gece Acıkanlara", subtitle: "Saat 22:00'den sonra bedava teslimat" },
     { title: "Tatlı Bir Son", subtitle: "Yemek yanına tüm tatlılar %50 indirimli" }
   ];
+
+  if (isChatOpen) {
+    return <ChatView onClose={() => setIsChatOpen(false)} />;
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col pb-32 overflow-x-hidden">
@@ -100,7 +106,10 @@ const App: React.FC = () => {
 
       {/* AI Chat Bar - Sağ Tarafta, 2px gri border ve dikey 5px boşluk */}
       <div className="fixed right-[10px] bottom-[110px] z-[60]">
-        <button className="py-[5px] px-[10px] bg-white text-black border-2 border-gray-200 rounded-2xl flex items-center justify-center shadow-sm active:scale-[0.98] transition-transform">
+        <button 
+          onClick={() => setIsChatOpen(true)}
+          className="py-[5px] px-[10px] bg-white text-black border-2 border-gray-200 rounded-2xl flex items-center justify-center shadow-sm active:scale-[0.98] transition-transform"
+        >
           <span className="text-[15px] font-bold tracking-tight">AI Chat</span>
         </button>
       </div>
