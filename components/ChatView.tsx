@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, ArrowUp, Sparkles, Search, Star, MapPin } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
@@ -23,7 +22,6 @@ interface ChatViewProps {
   onClose: () => void;
 }
 
-// Fixed: Moved BusinessCard outside and added React.FC type to handle 'key' prop correctly (Line 124 fix)
 const BusinessCard: React.FC<{ business: Business }> = ({ business }) => (
   <div className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm min-w-[240px] w-[240px]">
     <div className="relative h-32 w-full">
@@ -70,8 +68,26 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
     setIsLoading(true);
 
     try {
-      // Fixed: Initialize GoogleGenAI exclusively with process.env.API_KEY as per guidelines
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+      // Vite ve Vercel için güvenli API Key erişimi
+      // process.env tarayıcıda hata verebileceği için window ve meta.env kontrolleri eklendi
+      let apiKey = '';
+      try {
+        apiKey = process.env.API_KEY || (import.meta as any).env?.VITE_API_KEY || '';
+      } catch (e) {
+        apiKey = (import.meta as any).env?.VITE_API_KEY || '';
+      }
+
+      if (!apiKey) {
+        // Eğer anahtar yoksa AI Studio penceresini açmayı dene
+        const aistudio = (window as any).aistudio;
+        if (aistudio) {
+          await aistudio.openSelectKey();
+          // Seçimden sonra tekrar dene (process.env otomatik güncellenir)
+          apiKey = process.env.API_KEY || '';
+        }
+      }
+
+      const ai = new GoogleGenAI({ apiKey });
       
       const contents = [...messages, newMessage].map(m => ({
         role: m.role,
@@ -121,9 +137,15 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
     } catch (error: any) {
       console.error("Gemini Connection Error:", error);
       
+      // Detaylı hata mesajı
+      let errorMsg = "Bağlantı hatası oluştu.";
+      if (!process.env.API_KEY && !(import.meta as any).env?.VITE_API_KEY) {
+        errorMsg = "API Anahtarı bulunamadı. Lütfen Vercel'den 'VITE_API_KEY' değişkenini ekleyip Redeploy yapın.";
+      }
+
       setMessages(prev => [...prev, { 
         role: 'model', 
-        text: "Üzgünüm, bir bağlantı hatası oluştu. Lütfen daha sonra tekrar deneyiniz." 
+        text: errorMsg 
       }]);
     } finally {
       setIsLoading(false);
