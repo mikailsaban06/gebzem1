@@ -40,23 +40,25 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
     const userMessage = textOverride || input.trim();
     if (!userMessage || isLoading) return;
 
-    // Mesajı ekrana yansıt
-    const userMsgObj: Message = { role: 'user', text: userMessage };
-    setMessages(prev => [...prev, userMsgObj]);
     setInput('');
+    const newMessages: Message[] = [...messages, { role: 'user', text: userMessage }];
+    setMessages(newMessages);
     setIsLoading(true);
 
     try {
-      // SDK Kurallarına göre initialization - Vercel API_KEY kullanılır
-      const apiKey = process.env.API_KEY;
-      
-      if (!apiKey) {
-        throw new Error("API_KEY environment variable is missing.");
+      // AI Studio anahtar kontrolü (Vercel'deki anahtarın istemci tarafında görünmemesi durumunda yedek mekanizma)
+      const aiStudio = (window as any).aistudio;
+      if (aiStudio) {
+        const hasKey = await aiStudio.hasSelectedApiKey();
+        if (!hasKey && !process.env.API_KEY) {
+          await aiStudio.openSelectKey();
+        }
       }
 
-      const ai = new GoogleGenAI({ apiKey });
+      // SDK standartlarına göre instance oluştur (Her aramada yeni instance önerilir)
+      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
       
-      // Geçmişi SDK'nın beklediği formata çevir
+      // Geçmişi SDK formatına dönüştür
       const contents = messages.map(m => ({
         role: m.role === 'ai' ? 'model' : 'user',
         parts: [{ text: m.text }]
@@ -68,18 +70,18 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
         parts: [{ text: userMessage }]
       });
 
-      // generateContent ile doğrudan API çağrısı
+      // Gemini 3 Flash modelini kullan (Hızlı ve etkili)
       const response = await ai.models.generateContent({
         model: 'gemini-3-flash-preview',
         contents: contents,
         config: {
-          systemInstruction: "Sen Gebze bölgesinde hizmet veren bir süper uygulamanın akıllı asistanısın. Kullanıcılara yemek, alışveriş, restorant ve genel Gebze rehberliği konularında yardımcı oluyorsun. Cevapların kısa, öz ve yardımsever olmalı. Eğer kullanıcı bir hizmet veya yer arıyorsa, ilgili yerleri önermelisin.",
+          systemInstruction: "Sen Gebze bölgesinde hizmet veren bir süper uygulamanın akıllı asistanısın. Kullanıcılara yemek, alışveriş, restorant ve genel Gebze rehberliği konularında yardımcı oluyorsun. Cevapların kısa, öz ve yardımsever olmalı. Eğer kullanıcı bir hizmet veya yer arıyorsa, ilgili yerleri öner.",
         },
       });
 
       const aiText = response.text || "Şu an yanıt üretemiyorum.";
       
-      // Örnek işletme verileri (Basit bir tetikleyici ile)
+      // İşletme önerileri simülasyonu
       const mockBusinesses: Business[] = [
         {
           id: '1',
@@ -111,10 +113,16 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
       }]);
 
     } catch (error: any) {
-      console.error("Gemini Connection Error:", error);
+      console.error("Gemini Error:", error);
+      
+      // Eğer anahtar hatası varsa tekrar seçim penceresini açmayı dene
+      if (error?.message?.includes("API key") || error?.message?.includes("entity was not found")) {
+        if ((window as any).aistudio) await (window as any).aistudio.openSelectKey();
+      }
+
       setMessages(prev => [...prev, { 
         role: 'ai', 
-        text: "Bağlantı sağlanamadı. Lütfen Vercel ayarlarından API_KEY değişkenini ve projenin yeniden dağıtıldığını (re-deploy) kontrol edin." 
+        text: "Bağlantı kurulamadı. Lütfen API anahtarınızın geçerli olduğundan ve Vercel üzerinde doğru tanımlandığından emin olun." 
       }]);
     } finally {
       setIsLoading(false);
