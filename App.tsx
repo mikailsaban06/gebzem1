@@ -85,8 +85,25 @@ const App: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {/* Keşfet Bölümü */}
+          <div className="flex flex-col gap-3">
+            <h2 className="text-[16px] font-bold text-black px-[10px]">Keşfet</h2>
+            <div className="px-[10px]">
+              <div className="w-[80px] h-[80px] bg-gray-50 rounded-2xl flex items-center justify-center overflow-hidden">
+                {/* % işareti kaldırıldı, kart boş bırakıldı */}
+              </div>
+            </div>
+          </div>
         </div>
       </Layout>
+
+      {/* AI Chat Bar - Sağ Tarafta, 2px gri border ve dikey 5px boşluk */}
+      <div className="fixed right-[10px] bottom-[110px] z-[60]">
+        <button className="py-[5px] px-[10px] bg-white text-black border-2 border-gray-200 rounded-2xl flex items-center justify-center shadow-sm active:scale-[0.98] transition-transform">
+          <span className="text-[15px] font-bold tracking-tight">AI Chat</span>
+        </button>
+      </div>
       
       {/* Alt Menü */}
       <footer className="w-full border-t border-gray-100 bg-white fixed bottom-0 left-0 pt-4 pb-[26px] z-50 rounded-t-[20px]">
