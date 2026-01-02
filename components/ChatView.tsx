@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, ArrowUp, Sparkles, Search, Star, MapPin } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
@@ -239,12 +238,11 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
           
           <div className="flex items-center justify-between mt-2">
             <div className="flex gap-1">
-              {/* Sarsıntı düzeltmesi için border yapısı sabitlendi */}
               <button 
                 onClick={() => setSearchMode('ai')}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition-all border ${
                   searchMode === 'ai' 
-                    ? 'bg-white border-orange-100 text-black shadow-sm' 
+                    ? 'bg-white border-orange-100 text-black' 
                     : 'bg-transparent border-transparent text-gray-400'
                 }`}
               >
@@ -258,7 +256,7 @@ const ChatView: React.FC<ChatViewProps> = ({ onClose }) => {
                 onClick={() => setSearchMode('standard')}
                 className={`flex items-center gap-1.5 px-4 py-2 rounded-full transition-all border ${
                   searchMode === 'standard' 
-                    ? 'bg-white border-gray-100 text-black shadow-sm' 
+                    ? 'bg-white border-gray-100 text-black' 
                     : 'bg-transparent border-transparent text-gray-400'
                 }`}
               >
