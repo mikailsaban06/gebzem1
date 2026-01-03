@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Layout from './components/Layout';
 import ChatView from './components/ChatView';
@@ -16,12 +16,29 @@ import {
   IceCream,
   Coffee,
   Sandwich,
-  Grape
+  Grape,
+  SlidersHorizontal
 } from 'lucide-react';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'home' | 'search' | 'categories' | 'offers' | 'profile'>('home');
   const [isChatOpen, setIsChatOpen] = useState(false);
+
+  // Arama Placeholder Mantığı
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const placeholders = [
+    "Bu hafta %20 indirim",
+    "Karadeniz mutfağı",
+    "Şehrindeki en iyi lezzetler",
+    "Market ihtiyaçlarını keşfet"
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
 
   const featuredCategories = [
     { 
@@ -43,7 +60,11 @@ const App: React.FC = () => {
   ];
 
   const campaigns = [
-    { title: "Bugün Ne Yesek?", subtitle: "Sana özel %30'a varan indirimleri keşfet" },
+    { 
+      image: "https://raw.githubusercontent.com/mikailsaban06/asdadsadsadasd/refs/heads/main/45.jpg",
+      title: "", 
+      subtitle: "" 
+    },
     { title: "Sıcak Pizza Keyfi", subtitle: "2. orta boy pizza şimdi sadece 99 TL" },
     { title: "Burger Menü Günleri", subtitle: "Seçili menülerde bedava içecek fırsatı" },
     { title: "Sağlıklı Seçenekler", subtitle: "Taze salata ve bowl çeşitlerinde kampanya" },
@@ -68,16 +89,39 @@ const App: React.FC = () => {
                 {campaigns.map((camp, idx) => (
                   <div 
                     key={idx} 
-                    className="w-full flex-shrink-0 h-44 snap-center flex flex-col items-start justify-center p-6 text-left"
+                    className={`w-full flex-shrink-0 h-44 snap-center flex flex-col items-start justify-center text-left ${camp.image ? 'p-0' : 'p-6'}`}
                   >
-                    <h3 className="text-[20px] font-bold text-black tracking-tight leading-tight mb-1">
-                      {camp.title}
-                    </h3>
-                    <p className="text-[13px] font-medium text-gray-500">
-                      {camp.subtitle}
-                    </p>
+                    {camp.image ? (
+                      <img src={camp.image} alt="Kampanya" className="w-full h-full object-cover" />
+                    ) : (
+                      <>
+                        <h3 className="text-[20px] font-bold text-black tracking-tight leading-tight mb-1">
+                          {camp.title}
+                        </h3>
+                        <p className="text-[13px] font-medium text-gray-500">
+                          {camp.subtitle}
+                        </p>
+                      </>
+                    )}
                   </div>
                 ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Arama Inputu - Slider Altına Taşındı */}
+          <div className="px-[10px]">
+            <div className="relative w-full">
+              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none z-10">
+                <Search size={18} className="text-gray-400" strokeWidth={2} />
+              </div>
+              <input 
+                type="text"
+                placeholder={placeholders[placeholderIndex]}
+                className="w-full h-[48px] bg-gray-50 border border-gray-100 rounded-xl pl-12 pr-12 outline-none text-[14px] font-medium text-black placeholder-gray-400 focus:bg-white focus:border-gray-200 transition-all duration-300"
+              />
+              <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none z-10">
+                <SlidersHorizontal size={18} className="text-gray-400" strokeWidth={2} />
               </div>
             </div>
           </div>
