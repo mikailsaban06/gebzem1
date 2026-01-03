@@ -43,11 +43,11 @@ const App: React.FC = () => {
   const featuredCategories = [
     { 
       name: 'Pizza', 
-      icon: <img src="https://raw.githubusercontent.com/mikailsaban06/asdadsadsadasd/refs/heads/main/44.jpg" alt="Pizza" className="w-full h-full object-cover rounded-2xl" /> 
+      icon: <img src="https://raw.githubusercontent.com/mikailsaban06/asdadsadsadasd/refs/heads/main/44.jpg" alt="Pizza" className="w-full h-full object-cover rounded-[20px]" /> 
     },
     { 
       name: 'Burger', 
-      icon: <img src="https://raw.githubusercontent.com/mikailsaban06/gbzqr06/refs/heads/main/34.jpg" alt="Burger" className="w-full h-full object-cover rounded-2xl" /> 
+      icon: <img src="https://raw.githubusercontent.com/mikailsaban06/gbzqr06/refs/heads/main/34.jpg" alt="Burger" className="w-full h-full object-cover rounded-[20px]" /> 
     },
     { name: 'Lahmacun', icon: <Flame size={24} strokeWidth={1.5} /> },
     { name: 'Sushi', icon: <Fish size={24} strokeWidth={1.5} /> },
@@ -92,7 +92,7 @@ const App: React.FC = () => {
                     className={`w-full flex-shrink-0 h-44 snap-center flex flex-col items-start justify-center text-left ${camp.image ? 'p-0' : 'p-6'}`}
                   >
                     {camp.image ? (
-                      <img src={camp.image} alt="Kampanya" className="w-full h-full object-cover" />
+                      <img src={camp.image} alt="Kampanya" className="w-full h-full object-fill rounded-2xl" />
                     ) : (
                       <>
                         <h3 className="text-[20px] font-bold text-black tracking-tight leading-tight mb-1">
@@ -129,10 +129,10 @@ const App: React.FC = () => {
           {/* Öne Çıkan Kategoriler Bölümü */}
           <div className="flex flex-col gap-3">
             <h2 className="text-[16px] font-bold text-black px-[10px]">Öne çıkan kategoriler</h2>
-            <div className="w-full overflow-x-auto no-scrollbar flex gap-4 pb-2 px-[10px]">
+            <div className="w-full overflow-x-auto no-scrollbar flex gap-3 pb-2 px-[10px]">
               {featuredCategories.map((cat, idx) => (
-                <div key={idx} className="flex flex-col items-center gap-2 min-w-[70px]">
-                  <div className="w-[70px] h-[70px] bg-gray-50 rounded-2xl flex items-center justify-center text-black">
+                <div key={idx} className="flex flex-col items-center gap-2 min-w-[75px]">
+                  <div className="w-[75px] h-[75px] bg-gray-50 rounded-[20px] flex items-center justify-center text-black">
                     {cat.icon}
                   </div>
                   <span className="text-[11px] font-semibold text-gray-700">{cat.name}</span>
