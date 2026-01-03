@@ -10,7 +10,6 @@ import {
   TicketPercent, 
   CircleUser,
   Pizza,
-  UtensilsCrossed,
   Flame,
   Fish,
   Beef,
@@ -26,7 +25,10 @@ const App: React.FC = () => {
 
   const featuredCategories = [
     { name: 'Pizza', icon: <Pizza size={24} strokeWidth={1.5} /> },
-    { name: 'Burger', icon: <UtensilsCrossed size={24} strokeWidth={1.5} /> },
+    { 
+      name: 'Burger', 
+      icon: <img src="https://raw.githubusercontent.com/mikailsaban06/gbzqr06/refs/heads/main/34.jpg" alt="Burger" className="w-full h-full object-cover rounded-xl" /> 
+    },
     { name: 'Lahmacun', icon: <Flame size={24} strokeWidth={1.5} /> },
     { name: 'Sushi', icon: <Fish size={24} strokeWidth={1.5} /> },
     { name: 'Döner', icon: <Beef size={24} strokeWidth={1.5} /> },
