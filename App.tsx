@@ -24,7 +24,10 @@ const App: React.FC = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   const featuredCategories = [
-    { name: 'Pizza', icon: <Pizza size={24} strokeWidth={1.5} /> },
+    { 
+      name: 'Pizza', 
+      icon: <img src="https://raw.githubusercontent.com/mikailsaban06/asdadsadsadasd/refs/heads/main/44.jpg" alt="Pizza" className="w-full h-full object-cover rounded-xl" /> 
+    },
     { 
       name: 'Burger', 
       icon: <img src="https://raw.githubusercontent.com/mikailsaban06/gbzqr06/refs/heads/main/34.jpg" alt="Burger" className="w-full h-full object-cover rounded-xl" /> 
